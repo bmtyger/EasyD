@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 class NotifierBridge:
     def __init__(self) -> None:
         self.jira: Optional[Any] = None
+        self.jira_project = os.environ.get("JIRA_PROJECT_KEY", "AI")
         self._load_jira()
 
     def _load_jira(self) -> None:
@@ -25,7 +26,7 @@ class NotifierBridge:
             try:
                 from ai_deploy.plugins.jira.notifier import JiraNotifier
                 self.jira = JiraNotifier(base_url=base_url, email=email, api_token=api_token)
-                log.info("jira notifier loaded")
+                log.info("jira notifier loaded project=%s", self.jira_project)
             except Exception as exc:
                 log.warning("jira notifier load failed: %s", exc)
 
@@ -48,7 +49,7 @@ class NotifierBridge:
         if self.jira:
             try:
                 self.jira.create_issue(
-                    project="AI",
+                    project=self.jira_project,
                     title=f"Deploy request: {payload.get('app_id', 'app')}",
                     description=f"AppSpec ready: {json.dumps(payload)}",
                 )
@@ -59,7 +60,7 @@ class NotifierBridge:
         if self.jira and not payload.get("approved", True):
             try:
                 self.jira.create_issue(
-                    project="AI",
+                    project=self.jira_project,
                     title="Security scan blocked deploy",
                     description=f"Findings: {payload.get('findings', 0)}",
                     issue_type="Bug",
@@ -71,7 +72,7 @@ class NotifierBridge:
         if self.jira and not payload.get("approved", True):
             try:
                 issue = self.jira.create_issue(
-                    project="AI",
+                    project=self.jira_project,
                     title="Cost validation failed",
                     description="Budget cap exceeded or estimate invalid.",
                     issue_type="Task",
@@ -85,7 +86,7 @@ class NotifierBridge:
         if self.jira and not payload.get("approved", True):
             try:
                 issue = self.jira.create_issue(
-                    project="AI",
+                    project=self.jira_project,
                     title="IaC validation failed",
                     description=f"Findings: {payload.get('findings', 0)}",
                     issue_type="Bug",
@@ -99,7 +100,7 @@ class NotifierBridge:
         if self.jira:
             try:
                 issue = self.jira.create_issue(
-                    project="AI",
+                    project=self.jira_project,
                     title=f"Deploy summary: {payload.get('app_id', 'app')}",
                     description=json.dumps(payload, indent=2),
                     issue_type="Task",

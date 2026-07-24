@@ -37,6 +37,7 @@ Set these environment variables to mirror deploy events to Jira:
 export JIRA_BASE_URL="https://your-company.atlassian.net"
 export JIRA_EMAIL="you@example.com"
 export JIRA_API_TOKEN="your-api-token"
+export JIRA_PROJECT_KEY="AI"  # optional, defaults to AI
 ```
 
 Supported events:
