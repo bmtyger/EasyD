@@ -61,9 +61,58 @@ variable "app_name" {
 
     if non_actions:
         for component in non_actions:
-            blocks.append(
-                f"# component: {component.type}\nresource \"{_resource_type(component.type)}\" \"app\" {{\n  tags = {{ Name = var.app_name }}\n}}\n"
-            )
+            if component.type == "eks":
+                blocks.append(
+                    """\
+resource "aws_eks_cluster" "app" {
+  name     = var.app_name
+  role_arn = aws_iam_role.eks_role.arn
+
+  vpc_config {
+    subnet_ids = []
+  }
+
+  tags = { Name = var.app_name }
+}
+
+resource "aws_iam_role" "eks_role" {
+  name = "${var.app_name}-eks-role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Service": "eks.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_eks_node_group" "app" {
+  cluster_name    = aws_eks_cluster.app.name
+  node_group_name = "${var.app_name}-ng"
+  node_role_arn   = aws_iam_role.eks_role.arn
+  subnet_ids      = []
+
+  instance_types = ["t3.medium"]
+  scaling_config {
+    desired_size = 2
+    min_size     = 1
+    max_size     = 4
+  }
+
+  tags = { Name = var.app_name }
+}
+""".lstrip()
+                )
+            else:
+                blocks.append(
+                    f"# component: {component.type}\nresource \"{_resource_type(component.type)}\" \"app\" {{\n  tags = {{ Name = var.app_name }}\n}}\n"
+                )
     else:
         blocks.append(
             """

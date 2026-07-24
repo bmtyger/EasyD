@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 from ai_deploy.core.event_bus import EventBus
-from ai_deploy.core.plugin_loader import load_plugins
+from ai_deploy.core.plugin_loader import PluginRegistry, load_plugins
 from ai_deploy.core.types import AppSpec, DeployState
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(message)s")
@@ -42,6 +42,14 @@ def _run_command(args) -> int:
             bus.subscribe(event, lambda payload, ev=event: notifier.publish(ev, payload))
     except Exception as exc:
         log.warning("notifier setup failed: %s", exc)
+
+    registry = PluginRegistry(args.plugins)
+    if registry.notifiers():
+        log.info("plugin notifiers=%s", [m.name for m in registry.notifiers()])
+    if registry.emitters(args.target):
+        log.info("plugin emitters=%s", [m.name for m in registry.emitters(args.target)])
+    if registry.detectors():
+        log.info("plugin detectors=%s", [m.name for m in registry.detectors()])
 
     state = DeployState(app_id="local", environment=args.env, status="pending")
     output = args.output
