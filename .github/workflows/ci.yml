@@ -46,3 +46,19 @@ jobs:
       - run: pip install -U pip setuptools wheel
       - run: pip install -r requirements.txt -e . mypy
       - run: mypy ai_deploy
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -U pip setuptools wheel
+      - run: pip install -r requirements.txt -e . pytest pytest-cov
+      - run: pytest -q --cov=ai_deploy --cov-report=xml
+      - uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: false

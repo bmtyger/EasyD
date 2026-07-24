@@ -1,4 +1,8 @@
-.PHONY: install test lint run plan validate rollback clean
+.PHONY: install test lint run plan validate rollback clean coverage
+
+coverage:
+	pip install pytest-cov
+	pytest --cov=ai_deploy --cov-report=term-missing -q
 
 install:
 	pip install -e .
