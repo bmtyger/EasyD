@@ -15,7 +15,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -r requirements.txt -e .
+      - run: pip install -U pip setuptools wheel
+      - run: pip install -r requirements.txt -e . pytest
       - run: pytest -q
 
   demo-run:
@@ -27,6 +28,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - run: pip install -U pip setuptools wheel
       - run: pip install -r requirements.txt -e .
       - run: ai-deploy run --target aws --env staging --output .deploy/package.json
       - uses: actions/upload-artifact@v4
@@ -41,5 +43,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - run: pip install -U pip setuptools wheel
       - run: pip install -r requirements.txt -e . mypy
       - run: mypy ai_deploy

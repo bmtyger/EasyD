@@ -39,12 +39,14 @@ class GitHubTracking:
             log.error("github api error %s %s body=%s", exc.code, path, text[:500])
             raise
 
-    def _gh_cli(self, args: list[str], stdin: Optional[str] = None) -> str:
+    def _gh_cli(self, args: list[str], stdin: Optional[str] = None, check: bool = False) -> str:
         cmd = ["gh"] + args
         log.info("gh command: %s", " ".join(cmd))
         out = subprocess.run(cmd, input=stdin, capture_output=True, text=True)
         if out.returncode != 0:
             log.error("gh error: %s", out.stderr[-1000:])
+            if check:
+                raise RuntimeError(f"gh failed: {out.stderr[-500:]}")
         return out.stdout
 
     def create_issue(self, title: str, body: str) -> dict:

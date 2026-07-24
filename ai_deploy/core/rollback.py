@@ -36,13 +36,14 @@ def write_manifest(
     }
 
     # preserve previous manifest before overwrite
-    if dest.exists():
-        backup = dest.with_suffix(".prev.json")
-        try:
-            shutil.copy2(dest, backup)
-        except Exception:
-            backup = None
-        payload["previous_manifest"] = str(backup) if backup else None
+    backup_path = dest.with_suffix(".prev.json")
+    try:
+        shutil.copy2(dest, backup_path)
+    except Exception:
+        backup = None
+    else:
+        backup = backup_path
+    payload["previous_manifest"] = str(backup) if backup else None
 
     dest.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     log.info("wrote rollback manifest=%s", dest)
