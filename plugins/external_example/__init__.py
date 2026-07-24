@@ -1,0 +1,1 @@
+"""External example plugin package."""

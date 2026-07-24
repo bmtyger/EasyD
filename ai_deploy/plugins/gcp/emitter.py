@@ -1,0 +1,1 @@
+"""GCP Terraform emitter scaffold."""

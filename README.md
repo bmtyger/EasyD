@@ -1,5 +1,10 @@
 # AI Deploy
 
+![CI](https://github.com/bmtyger/EasyD/actions/workflows/ci.yml/badge.svg)
+![Coverage](https://img.shields.io/endpoint?url=https://img.shields.io/codecov/c/github/bmtyger/EasyD)
+![PyPI](https://img.shields.io/pypi/v/ai-deploy)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 AI-driven infrastructure compiler and deployer.
 
 Free, open source, runs in your environment.
