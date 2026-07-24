@@ -1,0 +1,12 @@
+-rw-r--r-- -*- text -*- eol=lf
+**/__pycache__/**
+**/*.pyc
+.deploy/**
+.backup/**
+.terraform/**
+*.tfstate
+*.tfstate.backup
+.DS_Store
+dist/
+build/
+*.egg-info
